@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:math';
 import 'package:freetogrow/Objects/game_state.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
@@ -12,26 +11,27 @@ class Turnhandler {
 
   Turnhandler (this.gameId);
 
-  void playTurn(){
+  GameState playTurn(GameState currentState){
     // Get updated board
-    GameState? updatedState = getUpdatedGameState();
-    if (updatedState == null){
-      return;
-    }
-
-    int? state = updatedState.state;
+    int? state = currentState.state;
     if (state == 1){
-      playerId = updatedState.player1 as String;
+      playerId = currentState.player1 as String;
     } else if (state == 2){
-      playerId = updatedState.player2 as String;
+      playerId = currentState.player2 as String;
     } else {
       // error
-      return;
+      currentState.state = -1;
+      return currentState;
     }
 
-
     // Get Player Hand
-    List<int> hand = playersRepo.getPlayerHand(playerId) as List<int>;
+    List<(int,bool)> hand = playersRepo.getPlayerHand(playerId) as List<(int, bool)>;
+
+    // Check if game has ended, if so change game status to 3 and return
+    if (checkGameEnd(currentState.table, hand)){
+      currentState.state = 3;
+      return currentState;
+    }
 
     // Send board to GUI
       // updatedState.board e.g.
@@ -42,7 +42,6 @@ class Turnhandler {
     List<int> newHand = [];
 
 
-    // Check if game has ended, if so change game status to 3 and return
 
 
     // Update flowers
@@ -57,6 +56,8 @@ class Turnhandler {
     }
     // Send updated hand to db
     playersRepo.updatePlayerHand(playerId, newHand);
+
+    return currentState;
   }
 
   // update Gamestate (Table) from database - main
@@ -76,4 +77,247 @@ class Turnhandler {
     }
     return randomNumber;
   }
+
+  bool checkGameEnd(List<int> board, List<(int,bool)> cards){
+    for (var card in cards){
+      if (card.$2 == false){
+        return true;
+      }
+      else{
+        switch (card.$1){
+          case 0:
+          // □
+            for(var square in board){
+              if (square == 0 || square == 3){
+                return true;
+              }
+            }
+          case 1:
+          // □
+          // □
+            for(var i = 0; i<56; i++){
+                if (checkSquare(board, i)){
+                  int indexToCheck = i + 8;
+                  if (checkSquare(board, indexToCheck)){
+                    return true;
+                  }
+                }
+            }
+          case 2:
+          // □□
+            for(var i = 0; i<63; i++){
+                if (checkSquare(board, i)){
+                  if (i % 8 == 7){
+                    continue;
+                  }
+                  int indexToCheck = i + 1;
+                  if (checkSquare(board, indexToCheck)){
+                    return true;
+                  }
+                }
+            }
+          case 3:
+          // □
+          // □
+          // □
+            for(var i = 0; i<48; i++){
+                if (checkSquare(board, i)){
+                  int indexToCheck1 = i + 8;
+                  int indexToCheck2 = i + 8;
+                  if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2)){
+                    return true;
+                  }
+                }
+            }
+          case 4:
+          // □□□  
+            for(var i = 0; i<62; i++){
+                if (checkSquare(board, i)){
+                  if (i % 8 >= 6){
+                    continue;
+                  }
+                  int indexToCheck1 = i + 1;
+                  int indexToCheck2 = i + 2;
+                  if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2)){
+                    return true;
+                  }
+                }
+            }
+          case 5:
+          // □□
+          // □
+            for(var i = 0; i<55; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 >= 7){
+                  continue;
+                }
+                int indexToCheck1 = i + 1;
+                int indexToCheck2 = i + 8;
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2)){
+                  return true;
+                }
+              }
+            }
+          case 6:
+          // □
+          // □□
+            for(var i = 0; i<55; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 >= 7){
+                  continue;
+                }
+                int indexToCheck1 = i + 8;
+                int indexToCheck2 = i + 9;
+
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2)){
+                  return true;
+                }
+              }
+            }
+          case 7:
+          // □□
+          //  □
+            for(var i = 0; i<55; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 >= 7){
+                  continue;
+                }
+                int indexToCheck1 = i + 1;
+                int indexToCheck2 = i + 9;
+
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2)){
+                  return true;
+                }
+              }
+            }
+          case 8:
+          //  □
+          // □□
+            for(var i = 0; i<56; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 < 1){
+                  continue;
+                }
+                int indexToCheck1 = i + 7;
+                int indexToCheck2 = i + 8;
+
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2)){
+                  return true;
+                }
+              }
+            }
+          case 9:
+          //  □
+          // □□
+          //  □
+            for(var i = 0; i<48; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 < 1){
+                  continue;
+                }
+                int indexToCheck1 = i + 7;
+                int indexToCheck2 = i + 8;
+                int indexToCheck3 = i + 16;
+
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2) && checkSquare(board, indexToCheck3)){
+                  return true;
+                }
+              }
+            }
+          case 10:
+          //  □
+          // □□□
+            for(var i = 0; i<56; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 < 1 || i % 8 >=7){
+                  continue;
+                }
+                int indexToCheck1 = i + 7;
+                int indexToCheck2 = i + 8;
+                int indexToCheck3 = i + 9;
+
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2) && checkSquare(board, indexToCheck3)){
+                  return true;
+                }
+              }
+            }
+          case 11:
+          // □
+          // □□
+          // □
+            for(var i = 0; i<47; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 >=7){
+                  continue;
+                }
+                int indexToCheck1 = i + 8;
+                int indexToCheck2 = i + 9;
+                int indexToCheck3 = i + 16;
+
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2) && checkSquare(board, indexToCheck3)){
+                  return true;
+                }
+              }
+            }
+          case 12:
+          // □□□
+          //  □
+            for(var i = 0; i<54; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 >=6){
+                  continue;
+                }
+                int indexToCheck1 = i + 1;
+                int indexToCheck2 = i + 2;
+                int indexToCheck3 = i + 9;
+
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2) && checkSquare(board, indexToCheck3)){
+                  return true;
+                }
+              }
+            }
+          case 13:
+          // □□□□
+            for(var i = 0; i<61; i++){
+              if (checkSquare(board, i)){
+                if (i % 8 >=5){
+                  continue;
+                }
+                int indexToCheck1 = i + 1;
+                int indexToCheck2 = i + 2;
+                int indexToCheck3 = i + 3;
+
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2) && checkSquare(board, indexToCheck3)){
+                  return true;
+                }
+              }
+            }
+          case 14:
+          // □
+          // □
+          // □
+          // □
+            for(var i = 0; i<40; i++){
+              if (checkSquare(board, i)){
+                int indexToCheck1 = i + 8;
+                int indexToCheck2 = i + 16;
+                int indexToCheck3 = i + 24;
+                if (checkSquare(board, indexToCheck1) && checkSquare(board, indexToCheck2) && checkSquare(board, indexToCheck3)){
+                  return true;
+                }
+              }
+            }
+      }
+      }
+      // switch between card types, different logic per card
+    }
+    return false;
+  }
+
+  bool checkSquare (List<int> board, int index){
+    if (board[index] == 0 || board[index] == 3){
+      return true;
+    }
+    return false;
+}
 }
