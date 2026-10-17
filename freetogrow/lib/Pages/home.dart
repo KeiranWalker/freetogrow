@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:freetogrow/Widgets/grid_square.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -56,6 +57,11 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+            GridSquare(status: 0, size: 10),
+            GridSquare(status:1, size:15),
+            GridSquare(status: 2, size:20),
+            GridSquare(status:3, size:30),
+            SizedBox(height:50, width:50, child: ColoredBox(color: Colors.green)),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(30),
