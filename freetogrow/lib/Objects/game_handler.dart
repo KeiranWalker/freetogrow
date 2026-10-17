@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:freetogrow/Objects/game_state.dart';
 import 'package:freetogrow/Objects/turn_handler.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
@@ -10,6 +12,7 @@ class Gamehandler {
     String gameId = gameStateRepo.createNewGame(player1_id) as String;
     gameState = gameStateRepo.getGameData (gameId) as GameState;
   }
+}
 
   void play_game(){
     while (gameState.getStatus() != 3 && gameState.getStatus() != -1){
@@ -29,7 +32,6 @@ class Gamehandler {
   // update Gamestate (Table) from database - main
 
 
-  // send new gamestate to gui
+// send new gamestate to gui
 
-  // recieve move from gui and update gamestate
-}
+// recieve move from gui and update gamestate

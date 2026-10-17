@@ -1,29 +1,34 @@
-import 'dart:ffi';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PlayersRepo {
-  final supabase = Supabase.instance.client;
+  final SupabaseClient _supabaseClient = Supabase.instance.client;
 
-  Future<List<int>> getPlayerHand(String playerId) async {
-      final dbhand = await supabase
-      .from('players')
-      .select('hand')
-      .eq('id', playerId);
-
-      List<dynamic> dynamicHand = dbhand as List<dynamic>;
-
-      List<int> hand = [];
-      for (var card in dynamicHand){
-        int cardInt = card as int;
-        hand.add(cardInt);
-      }
-
-      return hand;
+  Future<PostgrestList> createUser({required String username}) async {
+    return await _supabaseClient
+        .from('players')
+        .insert({'name': username})
+        .select('id');
   }
-  
-  Future<void> updatePlayerHand(String playerId, List<(int, bool)> hand) async {
-    await supabase
+
+  Future<List<int>?> getTableData(String playerId) async {
+    final dbhand = await _supabaseClient
+        .from('players')
+        .select('hand')
+        .eq('id', playerId);
+
+    List<dynamic> dynamicHand = dbhand as List<dynamic>;
+
+    List<int> hand = [];
+    for (var card in dynamicHand) {
+      int cardInt = card as int;
+      hand.add(cardInt);
+    }
+
+    return hand;
+  }
+
+  Future<void> updatePlaterHand(String playerId, List<int> hand) async {
+    await _supabaseClient
         .from('players')
         .update({'hand': hand})
         .eq('id', playerId);
