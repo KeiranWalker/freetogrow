@@ -1,8 +1,27 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freetogrow/Objects/game_state.dart';
 
 class GameStateRepo {
   final supabase = Supabase.instance.client;
+
+  Future<String> createNewGame(String player1_id, String player2_id ) async {
+    List<List<int>> table = [];
+    for (int i = 0; i < 8; i++ ){
+      List<int> newRow = [];
+      for (int j = 0; j < 8; j++ ){
+        newRow.add(0);
+        }
+      table.add(newRow);
+    }
+  final gameId = await supabase.from('game_states').insert({
+    'state': 0,
+    'player_one': player1_id,
+    'player_two': player2_id,
+    'table': table,
+  }).select().single();;
+  return gameId['id'] as String;
+  }
   
   Future<GameState?> getTableData(String gameId) async {
     final data = await supabase
