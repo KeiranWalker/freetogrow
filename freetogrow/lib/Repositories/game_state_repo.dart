@@ -4,14 +4,10 @@ import 'package:freetogrow/Objects/game_state.dart';
 class GameStateRepo {
   final _supbaseClient = Supabase.instance.client;
 
-  Future<String> createNewGame(String player1_id) async {
-    List<List<int>> table = [];
-    for (int i = 0; i < 8; i++) {
-      List<int> newRow = [];
-      for (int j = 0; j < 8; j++) {
-        newRow.add(0);
-      }
-      table.add(newRow);
+  Future<String> createNewGame(String player_id,) async {
+    List<int> table = [];
+    for (int i = 0; i < 64; i++ ){
+      table.add(0);
     }
 
     final gameId = await _supbaseClient
@@ -21,6 +17,13 @@ class GameStateRepo {
         .single();
     return gameId['id'] as String;
   }
+  
+  Future<GameState?> getGameData(String gameId) async {
+    final data = await supabase
+    .from('game_states')
+    .select()
+    .eq('id', gameId)
+    .maybeSingle();
 
   Future<void> backFillGame(String gamedId, userId) async {
     await _supbaseClient
@@ -43,17 +46,11 @@ class GameStateRepo {
       String player2 = data['player_two'] as String;
       List<dynamic> rawTable = data['table'] as List<dynamic>;
 
-      // Convert from dynamic type to List<List<int>>
-      List<List<int>> table = [];
+      // Convert from dynamic type to List<int>
+      List<int> table = [];
 
-      for (var row in rawTable) {
-        List<dynamic> castedRow = row as List<dynamic>;
-
-        List<int> newRow = [];
-        for (var value in castedRow) {
-          newRow.add(value as int);
-        }
-        table.add(newRow);
+      for (var value in rawTable) {
+        table.add(value) as int;
       }
 
       GameState gameState = GameState(
@@ -69,12 +66,8 @@ class GameStateRepo {
     }
   }
 
-  Future<void> updateTableData(
-    String gameId,
-    List<List<int>> newTable,
-    List<int> hand,
-  ) async {
-    await _supbaseClient
+  Future<void> updateTableData(String gameId, List<int> newTable) async {
+    await supabase
         .from('game_states')
         .update({'table': newTable})
         .eq('id', gameId);

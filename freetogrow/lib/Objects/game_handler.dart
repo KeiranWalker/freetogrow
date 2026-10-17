@@ -1,19 +1,36 @@
 import 'dart:ffi';
 
 import 'package:freetogrow/Objects/game_state.dart';
+import 'package:freetogrow/Objects/turn_handler.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
 
 class Gamehandler {
   GameStateRepo gameStateRepo = GameStateRepo();
-  GameState? gameState;
+  GameState gameState = GameState();
 
-  Gamehandler(String player1_id, String player2_id) {
+  Gamehandler(String player1_id){
     String gameId = gameStateRepo.createNewGame(player1_id) as String;
-    gameState = gameStateRepo.getTableData(gameId) as GameState?;
+    gameState = gameStateRepo.getGameData (gameId) as GameState;
   }
 }
 
-// update Gamestate (Table) from database - main
+  void play_game(){
+    while (gameState.getStatus() != 3 && gameState.getStatus() != -1){
+      Turnhandler turn = Turnhandler(gameState.getGameId()); 
+      //gameturn.playturn();
+      }
+      print("Game over");
+
+      
+      
+  }
+
+
+
+
+
+  // update Gamestate (Table) from database - main
+
 
 // send new gamestate to gui
 
