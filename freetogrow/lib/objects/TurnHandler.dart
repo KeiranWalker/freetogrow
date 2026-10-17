@@ -1,11 +1,20 @@
 import 'dart:ffi';
 import 'dart:math';
+import 'package:freetogrow/objects/GameState.dart';
+import 'package:freetogrow/repository/game_state_repo.dart';
 
 class Turnhandler {
+  GameStateRepo gameStateRepo = GameStateRepo();
   //GameState game;
   // String which_players_turn
 
   // update Gamestate (Table) from database - main
+  GameState? GetUpdatedGameState() {
+    GameState? gameState = gameStateRepo.getTableData('gameId') as GameState?;
+    return gameState;
+  }
+  
+  
 
   // send new gamestate to gui
 

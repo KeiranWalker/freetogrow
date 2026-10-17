@@ -4,7 +4,7 @@ import 'package:freetogrow/objects/GameState.dart';
 class GameStateRepo {
   final supabase = Supabase.instance.client;
   
-  Future<void> getTableData(String gameId) async {
+  Future<GameState?> getTableData(String gameId) async {
     final data = await supabase
     .from('GameState')
     .select()
@@ -25,9 +25,11 @@ class GameStateRepo {
         gameId: gameId,
         table: [] // Convert table from string to List
       );
+      return gameState;
     } else {
-      print('No data found for gameId: $gameId');
+      return null;
     }
+    
   }
 
   
