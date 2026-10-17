@@ -21,4 +21,9 @@ class GameState{
   int getStatus(){
       return state;
     }
+  String getGameId(){
+      return gameId;
+    }
+
+  
 }

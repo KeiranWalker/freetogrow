@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PlayersRepo {
-  final supabase = Supabase.instance.client;
+  final SupabaseClient _supabaseClient = Supabase.instance.client;
 
   Future<List<(int, bool)>> getPlayerHand(String playerId) async {
       final response = await supabase
