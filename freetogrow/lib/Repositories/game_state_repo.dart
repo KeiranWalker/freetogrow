@@ -18,7 +18,7 @@ class GameStateRepo {
   return gameId['id'] as String;
   }
   
-  Future<GameState?> getTableData(String gameId) async {
+  Future<GameState?> getGameData(String gameId) async {
     final data = await supabase
     .from('game_states')
     .select()
@@ -53,7 +53,7 @@ class GameStateRepo {
     
   }
 
-  Future<void> updateTableData(String gameId, List<List<int>> newTable, List<int> hand) async {
+  Future<void> updateTableData(String gameId, List<List<int>> newTable) async {
     await supabase
         .from('game_states')
         .update({'table': newTable})
