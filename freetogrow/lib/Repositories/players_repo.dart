@@ -1,31 +1,24 @@
-import 'dart:ffi';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PlayersRepo {
   final supabase = Supabase.instance.client;
 
-  Future<List<int>> getPlayerHand(String playerId) async {
-      final dbhand = await supabase
+  Future<List<(int, bool)>> getPlayerHand(String playerId) async {
+      final response = await supabase
       .from('players')
       .select('hand')
-      .eq('id', playerId);
+      .eq('id', playerId)
+      .single();
 
-      List<dynamic> dynamicHand = dbhand as List<dynamic>;
-
-      List<int> hand = [];
-      for (var card in dynamicHand){
-        int cardInt = card as int;
-        hand.add(cardInt);
-      }
+      List<(int, bool)> hand = (response['hand'] as List).map((card) => (card[0] as int, card[1] as bool)).toList();
 
       return hand;
   }
   
-  Future<void> updatePlayerHand(String playerId, List<int> hand) async {
+  Future<void> updatePlayerHand(String playerId, List<(int, bool)> hand) async {
     await supabase
         .from('players')
-        .update({'hand': hand})
+        .update({'hand': hand.map((e) => [e.$1, e.$2]).toList()})
         .eq('id', playerId);
   }
 }

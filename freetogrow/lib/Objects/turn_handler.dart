@@ -15,9 +15,9 @@ class Turnhandler {
     // Get updated board
     int? state = currentState.state;
     if (state == 1){
-      playerId = currentState.player1 as String;
+      playerId = currentState.player1;
     } else if (state == 2){
-      playerId = currentState.player2 as String;
+      playerId = currentState.player2;
     } else {
       // error
       currentState.state = -1;
@@ -37,9 +37,9 @@ class Turnhandler {
       // updatedState.board e.g.
     // Send player hand to gui
     // Recieve updated board from gui
-    List<List<int>> updatedTable = [];
+    List<int> updatedTable = [];
     // Recieve updated hand from gui
-    List<int> newHand = [];
+    List<(int, bool)> newHand = [];
 
 
 
@@ -51,7 +51,7 @@ class Turnhandler {
 
     // Generate new card
     while (newHand.length < 3){
-      int card = drawNewCard();
+      (int, bool)card = drawNewCard();
       newHand.add(card);
     }
     // Send updated hand to db
