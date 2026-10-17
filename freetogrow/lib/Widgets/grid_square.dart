@@ -22,15 +22,15 @@ class GridSquare extends StatelessWidget {
   dynamic getColour(int number) {
     switch (number) {
       case 0:
-        Colors.grey;
-        break;
+        return Colors.grey;
       case 1:
-        Colors.green;
-        break;
+        return Colors.green;
       case 2:
-        Colors.orange;
+        return Colors.orange;
       case 3:
-        Colors.pink;
+        return Colors.pink;
+      default:
+        return  Colors.black;
     }
   }
   
