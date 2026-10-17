@@ -28,7 +28,7 @@ class CreateUserController extends ChangeNotifier {
       late final String gameId;
 
       if (response!.isNotEmpty) {
-        final String gameId = response!.first['id'];
+        gameId = response!.first['id'];
         await _gameStateRepo.backFillGame(gameId, userId);
       } else {
         gameId = await _gameStateRepo.createNewGame(userId);
