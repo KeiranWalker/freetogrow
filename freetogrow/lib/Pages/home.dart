@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freetogrow/Controllers/create_user_controller.dart';
+import 'package:freetogrow/Repositories/game_state_repo.dart';
 import 'package:freetogrow/Repositories/players_repo.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:freetogrow/Widgets/grid_square.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,7 +17,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _createUserController = CreateUserController(PlayersRepo());
+    _createUserController = CreateUserController(
+      PlayersRepo(),
+      GameStateRepo(),
+    );
     super.initState();
   }
 
@@ -28,69 +31,50 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<String?> _createUser() async {
-    setState(() {
-      _createUserController.isLoading = true;
-    });
-
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: SizedBox(
-            height: 200,
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CircularProgressIndicator(),
-                    Text(
-                      'Looking for a game...',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ],
-                ),
-              ),
+      builder: (context) => const Dialog(
+        child: SizedBox(
+          height: 200,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text('Looking for a game...'),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
 
+    String? id;
+
     try {
-      final String? id = await _createUserController.createUser(
+      id = await _createUserController.createUser(
         username: usernameController.text,
       );
-
-      if (!mounted) return id;
-
-      Navigator.of(context).pop(); // Close loading dialog
-
-      setState(() {
-        _createUserController.isLoading = false;
-      });
-
-      if (_createUserController.error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(_createUserController.error!)));
-      }
-
-      return id;
     } finally {
-      if (mounted && _createUserController.isLoading) {
+      if (mounted) {
         Navigator.of(context).pop();
-        setState(() {
-          _createUserController.isLoading = false;
-        });
       }
     }
+
+    if (!mounted) return id;
+
+    if (id != null) {
+      Navigator.pushNamed(context, '/grid');
+    }
+
+    if (_createUserController.error != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(_createUserController.error!)));
+    }
+
+    return id;
   }
 
   @override
