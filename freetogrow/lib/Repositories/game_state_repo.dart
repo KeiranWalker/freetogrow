@@ -1,12 +1,12 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:freetogrow/objects/GameState.dart';
+import 'package:freetogrow/Objects/game_state.dart';
 
 class GameStateRepo {
   final supabase = Supabase.instance.client;
   
   Future<GameState?> getTableData(String gameId) async {
     final data = await supabase
-    .from('GameState')
+    .from('game_states')
     .select()
     .eq('id', gameId)
     .maybeSingle();
@@ -43,6 +43,13 @@ class GameStateRepo {
       return null;
     }
     
+  }
+
+  Future<void> updateTableData(String gameId, List<List<int>> newTable, List<int> hand) async {
+    await supabase
+        .from('game_states')
+        .update({'table': newTable})
+        .eq('id', gameId);
   }
 
   

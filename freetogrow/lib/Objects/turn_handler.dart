@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'dart:math';
-import 'package:freetogrow/objects/GameState.dart';
-import 'package:freetogrow/repository/game_state_repo.dart';
+import 'package:freetogrow/Objects/game_state.dart';
+import 'package:freetogrow/Repositories/game_state_repo.dart';
 
 class Turnhandler {
   GameStateRepo gameStateRepo = GameStateRepo();
