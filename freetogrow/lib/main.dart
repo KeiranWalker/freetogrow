@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:freetogrow/app_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://ejfymcrbtiwnypyzfdvm.supabase.co',
+    publishableKey: 'sb_publishable_3RBpGjsqsKmE2jAlcWeB5Q_o_UY3oId',
+  );
   runApp(const MainApp());
 }
 
