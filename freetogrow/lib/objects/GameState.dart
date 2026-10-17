@@ -5,10 +5,10 @@ class GameState{
   int? state;
   String? player1;
   String? player2;
-  List<Int>? hand1;
-  List<Int>? hand2;
+  List<int>? hand1;
+  List<int>? hand2;
 
-  List<List<Int>>? table;
+  List<List<int>>? table;
 
   GameState({
     this.gameId,
