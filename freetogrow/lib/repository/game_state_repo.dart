@@ -16,14 +16,27 @@ class GameStateRepo {
       int state = data['state'] as int;
       String player1 = data['player1'] as String;
       String player2 = data['player2'] as String;
-      String table = data['table'] as String;
+      List<dynamic> rawTable = data['table'] as List<dynamic>;
+
+      // Convert from dynamic type to List<List<int>>
+      List<List<int>> table = [];
+
+      for (var row in rawTable) {
+        List<dynamic> castedRow = row as List<dynamic>;
+
+        List<int> newRow = [];
+        for (var value in castedRow) {
+          newRow.add(value as int);
+        }
+        table.add(newRow);
+      }
 
       GameState gameState = GameState(
         state: state,
         player1: player1,
         player2: player2,
         gameId: gameId,
-        table: [] // Convert table from string to List
+        table: table
       );
       return gameState;
     } else {
