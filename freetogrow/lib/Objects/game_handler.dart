@@ -7,8 +7,11 @@ class Gamehandler {
   GameState? gameState;
 
   Gamehandler(String player1_id, String player2_id){
-    String gameId = gameStateRepo.createNewGame(player1_id, player2_id) as String;
+    String gameId = gameStateRepo.createNewGame(player1_id) as String;
     gameState = gameStateRepo.getTableData(gameId) as GameState?;
+
+  }
+
   }
 
 
@@ -21,4 +24,3 @@ class Gamehandler {
   // send new gamestate to gui
 
   // recieve move from gui and update gamestate
-}
