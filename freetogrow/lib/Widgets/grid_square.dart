@@ -15,6 +15,23 @@ class GridSquare extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
+      child: ColoredBox(color : getColour(status))
     );
   }
+
+  dynamic getColour(int number) {
+    switch (number) {
+      case 0:
+        Colors.grey;
+        break;
+      case 1:
+        Colors.green;
+        break;
+      case 2:
+        Colors.orange;
+      case 3:
+        Colors.pink;
+    }
+  }
+  
 }
