@@ -12,7 +12,6 @@ class Gamehandler {
     String gameId = gameStateRepo.createNewGame(player1_id) as String;
     gameState = gameStateRepo.getGameData (gameId) as GameState;
   }
-}
 
   void play_game(){
     while (gameState.getStatus() != 3 && gameState.getStatus() != -1){
@@ -24,14 +23,4 @@ class Gamehandler {
       
       
   }
-
-
-
-
-
-  // update Gamestate (Table) from database - main
-
-
-// send new gamestate to gui
-
-// recieve move from gui and update gamestate
+}

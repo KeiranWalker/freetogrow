@@ -2,14 +2,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freetogrow/Objects/game_state.dart';
 
 class GameStateRepo {
-  final _supbaseClient = Supabase.instance.client;
+  final _supabaseClient = Supabase.instance.client;
 
   Future<String> createNewGame(String playerId,) async {
     List<int> table = [];
     for (int i = 0; i < 64; i++ ){
       table.add(0);
     }
-  final gameId = await supabase.from('game_states').insert({
+  final gameId = await _supabaseClient.from('game_states').insert({
     'state': 0,
     'player_one': playerId,
     'table': table,
@@ -17,22 +17,15 @@ class GameStateRepo {
   return gameId['id'] as String;
   }
   
-  Future<GameState?> getGameData(String gameId) async {
-    final data = await supabase
-    .from('game_states')
-    .select()
-    .eq('id', gameId)
-    .maybeSingle();
-
   Future<void> backFillGame(String gamedId, userId) async {
-    await _supbaseClient
+    await _supabaseClient
         .from('game_states')
         .update({'state': 2, 'player_two': userId})
         .eq('id', gamedId);
   }
 
   Future<GameState?> getTableData(String gameId) async {
-    final data = await _supbaseClient
+    final data = await _supabaseClient
         .from('game_states')
         .select()
         .eq('id', gameId)
@@ -66,14 +59,14 @@ class GameStateRepo {
   }
 
   Future<void> updateTableData(String gameId, List<int> newTable) async {
-    await supabase
+    await _supabaseClient
         .from('game_states')
         .update({'table': newTable})
         .eq('id', gameId);
   }
 
   Future<PostgrestList> isPendingGame() {
-    return _supbaseClient
+    return _supabaseClient
         .from('game_states')
         .select('id')
         .eq('state', 0)
@@ -81,7 +74,7 @@ class GameStateRepo {
   }
 
   Future<bool> hasSecondPlayer(String gameId) async {
-    final response = await _supbaseClient
+    final response = await _supabaseClient
         .from('game_states')
         .select('player_two')
         .eq('id', gameId)
@@ -89,10 +82,4 @@ class GameStateRepo {
 
     return response['player_two'] != null;
   }
-
-  // update Gamestate (Table) from database - main
-
-  // send new gamestate to gui
-
-  // recieve move from gui and update gamestate
 }

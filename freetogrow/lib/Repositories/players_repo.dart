@@ -4,7 +4,7 @@ class PlayersRepo {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
 
   Future<List<(int, bool)>> getPlayerHand(String playerId) async {
-      final response = await supabase
+      final response = await _supabaseClient
       .from('players')
       .select('hand')
       .eq('id', playerId)
@@ -16,7 +16,7 @@ class PlayersRepo {
   }
   
   Future<void> updatePlayerHand(String playerId, List<(int, bool)> hand) async {
-    await supabase
+    await _supabaseClient
         .from('players')
         .update({'hand': hand.map((e) => [e.$1, e.$2]).toList()})
         .eq('id', playerId);
