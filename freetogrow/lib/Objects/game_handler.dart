@@ -11,10 +11,10 @@ class Gamehandler {
     String gameId = gameStateRepo.createNewGame(player1_id) as String;
     gameState = gameStateRepo.getTableData(gameId) as GameState?;
   }
-
-  // update Gamestate (Table) from database - main
-
-  // send new gamestate to gui
-
-  // recieve move from gui and update gamestate
 }
+
+// update Gamestate (Table) from database - main
+
+// send new gamestate to gui
+
+// recieve move from gui and update gamestate
