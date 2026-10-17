@@ -1,80 +1,68 @@
-import 'dart:ffi';
 import 'dart:math';
+
 import 'package:freetogrow/Objects/game_state.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
 import 'package:freetogrow/Repositories/players_repo.dart';
 
 class Turnhandler {
-  GameStateRepo gameStateRepo = GameStateRepo();
-  PlayersRepo playersRepo = PlayersRepo();
-  String gameId;
-  String playerId = "";
+  final GameStateRepo gameStateRepo = GameStateRepo();
+  final PlayersRepo playersRepo = PlayersRepo();
 
-  Turnhandler (this.gameId);
+  final String gameId;
+  String playerId = '';
 
-  void playTurn(){
+  Turnhandler(this.gameId);
+
+  Future<void> playTurn() async {
     // Get updated board
-    GameState? updatedState = getUpdatedGameState();
-    if (updatedState == null){
-      return;
-    }
+    final GameState? updatedState = await getUpdatedGameState();
 
-    int? state = updatedState.state;
-    if (state == 1){
-      playerId = updatedState.player1 as String;
-    } else if (state == 2){
-      playerId = updatedState.player2 as String;
+    if (updatedState == null) return;
+
+    // Determine whose turn it is
+    if (updatedState.state == 1) {
+      playerId = updatedState.player1!;
+    } else if (updatedState.state == 2) {
+      playerId = updatedState.player2!;
     } else {
-      // error
       return;
     }
 
+    // Get player hand
+    final List<(int, bool)> hand = await playersRepo.getPlayerHand(playerId);
 
-    // Get Player Hand
-    List<(int,bool)> hand = playersRepo.getPlayerHand(playerId) as List<(int,bool)>;
+    // Send board and hand to GUI
+    // TODO: Receive updated board from GUI
+    final List<int> updatedTable = updatedState.table as List<int>;
 
-    // Send board to GUI
-      // updatedState.board e.g.
-    // Send player hand to gui
-    // Recieve updated board from gui
-    List<List<int>> updatedTable = [];
-    // Recieve updated hand from gui
-    List<(int, bool)> newHand = [];
+    // TODO: Receive updated hand from GUI
+    final List<(int, bool)> newHand = List.from(hand);
 
+    // TODO: Check whether the game has ended
+    // TODO: Update flowers
 
-    // Check if game has ended, if so change game status to 3 and return
+    // Save updated board
+    await gameStateRepo.updateTableData(gameId, updatedTable);
 
-
-    // Update flowers
-
-    // Send updated board to db
-    gameStateRepo.updateTableData(gameId, updatedTable);
-
-    // Generate new card
-    while (newHand.length < 3){
-      (int, bool) card = drawNewCard();
-      newHand.add(card);
+    // Generate new cards until the hand contains 3 cards
+    while (newHand.length < 3) {
+      newHand.add(drawNewCard());
     }
-    // Send updated hand to db
-    playersRepo.updatePlayerHand(playerId, newHand);
+
+    // Save updated hand
+    // await playersRepo.updatePlayerHand(playerId, newHand);
   }
 
-  // update Gamestate (Table) from database - main
-  GameState? getUpdatedGameState() {
-    GameState? gameState = gameStateRepo.getGameData(gameId) as GameState?;
-    return gameState;
+  Future<GameState?> getUpdatedGameState() async {
+    return await gameStateRepo.getGameData(gameId);
   }
 
-  // draw new card
-  (int, bool) drawNewCard(){
-    Random random = Random();
-    int min = 0;
-    int max = 14;
-    int randomNumber = min + random.nextInt(max - min + 1);
-    bool positive = true;
-    if (random.nextInt(10) >= 7){
-      positive = false;
-    }
-    return (randomNumber, positive); // doesn't have positive or negative
+  (int, bool) drawNewCard() {
+    final random = Random();
+
+    final int randomNumber = random.nextInt(15);
+    final bool positive = random.nextInt(10) < 7;
+
+    return (randomNumber, positive);
   }
 }
