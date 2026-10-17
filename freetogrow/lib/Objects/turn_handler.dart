@@ -14,8 +14,6 @@ class Turnhandler {
     return gameState;
   }
   
-  
-
   // send new gamestate to gui
 
   // recieve move from gui and update gamestate
@@ -26,10 +24,11 @@ class Turnhandler {
     int min = 0;
     int max = 14;
     int randomNumber = min + random.nextInt(max - min + 1);
+    bool positive = true;
     if (random.nextInt(10) >= 7){
-      randomNumber *= -1;
+      positive = false;
     }
-    return randomNumber;
+    return randomNumber; // doesn't have positive or negative
   }
 
   // update flowers if required
