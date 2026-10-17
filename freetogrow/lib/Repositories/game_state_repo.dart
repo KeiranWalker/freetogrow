@@ -5,7 +5,7 @@ import 'package:freetogrow/Objects/game_state.dart';
 class GameStateRepo {
   final supabase = Supabase.instance.client;
 
-  Future<String> createNewGame(String player1_id, String player2_id ) async {
+  Future<String> createNewGame(String player_id,) async {
     List<List<int>> table = [];
     for (int i = 0; i < 8; i++ ){
       List<int> newRow = [];
@@ -15,9 +15,8 @@ class GameStateRepo {
       table.add(newRow);
     }
   final gameId = await supabase.from('game_states').insert({
-    'state': 2,
-    'player_one': player1_id,
-    'player_two': player2_id,
+    'state': 0,
+    'player_one': player_id,
     'table': table,
   }).select().single();;
   return gameId['id'] as String;
