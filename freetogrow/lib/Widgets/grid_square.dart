@@ -15,7 +15,12 @@ class GridSquare extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: ColoredBox(color : getColour(status))
+      child: DecoratedBox(
+        decoration : BoxDecoration(
+          color: getColour(status), 
+          border: Border.all(width: 0.3)
+        )
+      )
     );
   }
 
