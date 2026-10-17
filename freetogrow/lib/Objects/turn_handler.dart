@@ -66,14 +66,15 @@ class Turnhandler {
   }
 
   // draw new card
-  int drawNewCard(){
+  (int, bool) drawNewCard(){
     Random random = Random();
     int min = 0;
     int max = 14;
     int randomNumber = min + random.nextInt(max - min + 1);
+    bool positive = true;
     if (random.nextInt(10) >= 7){
-      randomNumber *= -1;
+      positive = false;
     }
-    return randomNumber;
+    return (randomNumber, positive); // doesn't have positive or negative
   }
 }

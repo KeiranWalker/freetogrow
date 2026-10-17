@@ -1,8 +1,22 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freetogrow/Objects/game_state.dart';
 
 class GameStateRepo {
   final supabase = Supabase.instance.client;
+
+  Future<String> createNewGame(String player_id,) async {
+    List<int> table = [];
+    for (int i = 0; i < 64; i++ ){
+      table.add(0);
+    }
+  final gameId = await supabase.from('game_states').insert({
+    'state': 0,
+    'player_one': player_id,
+    'table': table,
+  }).select().single();;
+  return gameId['id'] as String;
+  }
   
   Future<GameState?> getGameData(String gameId) async {
     final data = await supabase
@@ -18,17 +32,11 @@ class GameStateRepo {
       String player2 = data['player2'] as String;
       List<dynamic> rawTable = data['table'] as List<dynamic>;
 
-      // Convert from dynamic type to List<List<int>>
-      List<List<int>> table = [];
+      // Convert from dynamic type to List<int>
+      List<int> table = [];
 
-      for (var row in rawTable) {
-        List<dynamic> castedRow = row as List<dynamic>;
-
-        List<int> newRow = [];
-        for (var value in castedRow) {
-          newRow.add(value as int);
-        }
-        table.add(newRow);
+      for (var value in rawTable) {
+        table.add(value) as int;
       }
 
       GameState gameState = GameState(
