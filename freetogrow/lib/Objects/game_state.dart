@@ -8,7 +8,7 @@ class GameState{
   List<int>? hand1;
   List<int>? hand2;
 
-  List<List<int>>? table;
+  List<int>? table;
 
   GameState({
     this.gameId,

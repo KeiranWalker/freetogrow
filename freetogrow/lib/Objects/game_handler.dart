@@ -17,6 +17,7 @@ class Gamehandler {
       Turnhandler turn = Turnhandler(); 
       //gameturn.playturn();
       }
+      print("Game over");
 
       
       

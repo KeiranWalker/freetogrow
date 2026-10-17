@@ -6,13 +6,9 @@ class GameStateRepo {
   final supabase = Supabase.instance.client;
 
   Future<String> createNewGame(String player_id,) async {
-    List<List<int>> table = [];
-    for (int i = 0; i < 8; i++ ){
-      List<int> newRow = [];
-      for (int j = 0; j < 8; j++ ){
-        newRow.add(0);
-        }
-      table.add(newRow);
+    List<int> table = [];
+    for (int i = 0; i < 64; i++ ){
+      table.add(0);
     }
   final gameId = await supabase.from('game_states').insert({
     'state': 0,
@@ -36,17 +32,11 @@ class GameStateRepo {
       String player2 = data['player2'] as String;
       List<dynamic> rawTable = data['table'] as List<dynamic>;
 
-      // Convert from dynamic type to List<List<int>>
-      List<List<int>> table = [];
+      // Convert from dynamic type to List<int>
+      List<int> table = [];
 
-      for (var row in rawTable) {
-        List<dynamic> castedRow = row as List<dynamic>;
-
-        List<int> newRow = [];
-        for (var value in castedRow) {
-          newRow.add(value as int);
-        }
-        table.add(newRow);
+      for (var value in rawTable) {
+        table.add(value) as int;
       }
 
       GameState gameState = GameState(
