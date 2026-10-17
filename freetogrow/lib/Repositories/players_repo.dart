@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class PlayersRepo {
   final supabase = Supabase.instance.client;
 
-  Future<List<int>?> getTableData(String playerId) async {
+  Future<List<int>> getPlayerHand(String playerId) async {
       final dbhand = await supabase
       .from('players')
       .select('hand')
@@ -22,7 +22,7 @@ class PlayersRepo {
       return hand;
   }
   
-  Future<void> updatePlaterHand(String playerId, List<int> hand) async {
+  Future<void> updatePlayerHand(String playerId, List<int> hand) async {
     await supabase
         .from('players')
         .update({'hand': hand})
