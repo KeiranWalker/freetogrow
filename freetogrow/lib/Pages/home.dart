@@ -9,30 +9,61 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final usernameController = TextEditingController();
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.green),
-      body: Column(
-        children: [
-          SizedBox(height: 50),
-          Center(
-            child: Text(
-              "Freetogrow",
-              style: GoogleFonts.acme(
-                fontSize: 45,
-                fontWeight: FontWeight.w500,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 150),
+            Center(
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'free',
+                      style: GoogleFonts.acme(
+                        fontSize: 45,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.green,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'to',
+                      style: GoogleFonts.acme(
+                        fontSize: 45,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.orange,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'grow',
+                      style: GoogleFonts.acme(
+                        fontSize: 45,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(30),
-              child: SingleChildScrollView(
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(30),
                 child: Column(
                   children: [
                     Image.asset('assets/homepageplant.png'),
                     TextField(
+                      controller: usernameController,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -50,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
-                      height: 40,
+                      height: 50,
                       child: FilledButton(
                         onPressed: () {},
                         style: FilledButton.styleFrom(
@@ -62,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: Text(
                           "Find game",
-                          style: TextStyle(fontSize: 30),
+                          style: TextStyle(fontSize: 20),
                         ),
                       ),
                     ),
@@ -70,8 +101,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
