@@ -19,7 +19,7 @@ class Turnhandler {
   // recieve move from gui and update gamestate
 
   // draw new card
-  int drawNewCard(){
+  (int, bool) drawNewCard(){
     Random random = Random();
     int min = 0;
     int max = 14;
@@ -28,7 +28,7 @@ class Turnhandler {
     if (random.nextInt(10) >= 7){
       positive = false;
     }
-    return randomNumber; // doesn't have positive or negative
+    return (randomNumber, positive); // doesn't have positive or negative
   }
 
   // update flowers if required
