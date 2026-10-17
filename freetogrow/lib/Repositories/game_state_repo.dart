@@ -15,7 +15,7 @@ class GameStateRepo {
       table.add(newRow);
     }
   final gameId = await supabase.from('game_states').insert({
-    'state': 0,
+    'state': 2,
     'player_one': player1_id,
     'player_two': player2_id,
     'table': table,

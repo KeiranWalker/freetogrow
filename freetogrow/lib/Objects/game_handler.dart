@@ -9,6 +9,7 @@ class Gamehandler {
   Gamehandler(String player1_id, String player2_id){
     String gameId = gameStateRepo.createNewGame(player1_id, player2_id) as String;
     gameState = gameStateRepo.getTableData(gameId) as GameState?;
+    
   }
 
 
