@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 class GameState{
-  String? gameId;
+  String gameId;
   int state;
   String? player1;
   String? player2;
@@ -11,7 +11,7 @@ class GameState{
   List<int>? table;
 
   GameState({
-    this.gameId,
+    this.gameId = "",
     this.state = -1,
     this.player1,
     this.player2,
@@ -23,4 +23,9 @@ class GameState{
   int getStatus(){
       return state;
     }
+  String getGameId(){
+      return gameId;
+    }
+
+  
 }

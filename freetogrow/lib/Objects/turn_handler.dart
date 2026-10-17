@@ -31,7 +31,7 @@ class Turnhandler {
 
 
     // Get Player Hand
-    List<int> hand = playersRepo.getPlayerHand(playerId) as List<int>;
+    List<(int,bool)> hand = playersRepo.getPlayerHand(playerId) as List<(int,bool)>;
 
     // Send board to GUI
       // updatedState.board e.g.
@@ -39,7 +39,7 @@ class Turnhandler {
     // Recieve updated board from gui
     List<List<int>> updatedTable = [];
     // Recieve updated hand from gui
-    List<int> newHand = [];
+    List<(int, bool)> newHand = [];
 
 
     // Check if game has ended, if so change game status to 3 and return
@@ -52,7 +52,7 @@ class Turnhandler {
 
     // Generate new card
     while (newHand.length < 3){
-      int card = drawNewCard();
+      (int, bool) card = drawNewCard();
       newHand.add(card);
     }
     // Send updated hand to db

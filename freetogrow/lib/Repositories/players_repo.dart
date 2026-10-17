@@ -22,7 +22,7 @@ class PlayersRepo {
       return hand;
   }
   
-  Future<void> updatePlayerHand(String playerId, List<int> hand) async {
+  Future<void> updatePlayerHand(String playerId, List<(int, bool)> hand) async {
     await supabase
         .from('players')
         .update({'hand': hand})
