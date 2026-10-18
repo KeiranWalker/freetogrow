@@ -88,14 +88,16 @@ class GameStateRepo {
     return opponent['name'] as String;
   }
 
-  Future<void> takeTurn(
+  Future<PostgrestList> takeTurn(
     String gameId,
     int newPlayerTurn,
     List<int> table,
+    gameOver,
   ) async {
-    await _supabaseClient
+    return await _supabaseClient
         .from('game_states')
-        .update({'state': newPlayerTurn, 'table': table})
-        .eq('id', gameId);
+        .update({'state': gameOver ? 3 : newPlayerTurn, 'table': table})
+        .eq('id', gameId)
+        .select('state');
   }
 }

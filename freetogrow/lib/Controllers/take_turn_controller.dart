@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:freetogrow/Objects/turn_handler.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../globals.dart' as globals;
 
@@ -9,12 +10,13 @@ class TakeTurnController extends ChangeNotifier {
 
   TakeTurnController({required this._gameStateRepo});
 
-  Future<(List<int>, int)> takeTurn(
+  Future<(List<int>, int, int)> takeTurn(
     String gameId,
     int playerTurn,
     int move,
     List<int> table,
     (int, bool) cardPlayed,
+    bool gameOver,
   ) async {
     final updatedTable = List<int>.from(table);
     final indexes = getCardIndexes(move, cardPlayed.$1);
@@ -37,8 +39,9 @@ class TakeTurnController extends ChangeNotifier {
       globals.playerHand!.add(Turnhandler(gameId).drawNewCard());
     }
 
-    await _gameStateRepo.takeTurn(gameId, newPlayerTurn, updatedTable);
-    return (updatedTable, newPlayerTurn);
+    PostgrestList result = await _gameStateRepo.takeTurn(gameId, newPlayerTurn, updatedTable, gameOver);
+    int state = result.first['state'];
+    return (updatedTable, newPlayerTurn, state);
   }
 
   Future<void> waitForMyTurn(

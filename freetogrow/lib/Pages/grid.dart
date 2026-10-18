@@ -32,6 +32,7 @@ class _GridPageState extends State<GridPage> {
   int? playerTurn;
   List<int>? table;
   List<int>? newTable;
+  int turns = 0;
 
   @override
   void initState() {
@@ -273,12 +274,15 @@ class _GridPageState extends State<GridPage> {
               child: FilledButton(
                 onPressed: validMove
                     ? () async {
+                        turns++;
+                        
                         final turnResult = await _takeTurnController.takeTurn(
                           gameId,
                           playerTurn!,
                           moveIndex,
                           table!,
                           cardPlayed,
+                          turns>=11,
                         );
         
                         if (!mounted) return;
@@ -295,6 +299,26 @@ class _GridPageState extends State<GridPage> {
                           } else if (updatedTable[index] == opponentValue && index != 0 && index != 63) {
                             updatedTable[index] = 0;
                           }
+                        }
+
+                        if (turnResult.$3 == 3) {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const Dialog(
+                              child: SizedBox(
+                                height: 200,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Game over', style: TextStyle(fontSize: 30),),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
                         }
         
                         setState(() {
