@@ -31,7 +31,7 @@ class LoadGameController extends ChangeNotifier {
       final table = gameState!.table;
 
       return (
-        {1: gameState!.player1!, 2: gameState!.player2!},
+        {1: gameState!.player1, 2: gameState!.player2},
         gameState!.state,
         table,
       );

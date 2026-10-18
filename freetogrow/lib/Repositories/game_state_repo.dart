@@ -5,7 +5,7 @@ class GameStateRepo {
   final _supabaseClient = Supabase.instance.client;
 
   Future<String> createNewGame(String playerId) async {
-    final List<int> table = List.filled(64, 0);
+    final List<int> table = [1] + List.filled(62, 0) + [2];
 
     final game = await _supabaseClient
         .from('game_states')

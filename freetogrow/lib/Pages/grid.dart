@@ -20,12 +20,19 @@ class _GridPageState extends State<GridPage> {
   late final TakeTurnController _takeTurnController;
   late String userId;
   late String gameId;
-
+  late int moveIndex;
+  late (int, bool) cardPlayed;
+  bool validMove = false;
+  
+  
+  late List<GridSquare>? grid;
+  bool loading = true;
   Map<int, String>? playerMappings;
   int? myPlayerNumber;
   bool _hasLoaded = false;
   int? playerTurn;
   List<int>? table;
+  List<int>? newTable;
 
   @override
   void initState() {
@@ -91,7 +98,7 @@ class _GridPageState extends State<GridPage> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
 
     if (_hasLoaded) return;
@@ -103,7 +110,29 @@ class _GridPageState extends State<GridPage> {
     userId = args['userId']!;
     gameId = args['gameId']!;
 
-    load();
+    await load();
+
+    grid = buildGrid(table ?? [1] + List.filled(62, 0) + [2]);
+    loading = false;
+  }
+
+  void setValidMove(int index, (int, bool) cardPlayedTuple) {
+    setState(() {
+      moveIndex = index;
+      cardPlayed = cardPlayedTuple;
+      newTable = table!.toList();
+      for (index in getCardIndexes(moveIndex, cardPlayedTuple.$1)) {
+        newTable![index] = 4;
+      }
+      grid = buildGrid(newTable!);
+      validMove = true;
+    });
+  }
+
+  List<GridSquare> buildGrid(List<int> table) {
+    return List.generate(64, (index) {
+              return GridSquare(status: table[index], size: MediaQuery.of(context).size.width , boardState: table, index: index, myPlayerNumber: myPlayerNumber!, validMoveCallback:  setValidMove);
+            });
   }
 
   @override
@@ -132,7 +161,7 @@ class _GridPageState extends State<GridPage> {
                       myPlayerNumber == 1 ? username : opponentName,
                       style: TextTheme.of(context).headlineSmall,
                     ),
-                    Text(playerTurn == 1 ? "Your turn!" : "Waiting..."),
+                    Text(playerTurn == 1 ? "Playing!" : "Waiting..."),
                   ],
                 ),
                 Column(
@@ -141,7 +170,7 @@ class _GridPageState extends State<GridPage> {
                       myPlayerNumber == 2 ? username : opponentName,
                       style: TextTheme.of(context).headlineSmall,
                     ),
-                    Text(playerTurn == 2 ? "Your turn!" : "Waiting..."),
+                    Text(playerTurn == 2 ? "Playing!" : "Waiting..."),
                   ],
                 ),
               ],
@@ -157,36 +186,64 @@ class _GridPageState extends State<GridPage> {
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   crossAxisCount: 8,
-                  children: List.generate(64, (index) {
-                    return GridSquare(
-                      status: index % 4,
-                      size: MediaQuery.of(context).size.width,
-                    );
-                  }),
+                  children: loading ? [CircularProgressIndicator()] : grid!,
                 ),
               ),
             ),
           ),
-          SizedBox(height: 75),
+          SizedBox(height: 60),
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: FractionallySizedBox(
+              widthFactor: 0.9,
+              child: Column(
+                children: loading ? [ColoredBox(color: Colors.grey)] : [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    spacing: 20,
+                    children: List.generate(3, (index) {
+                      int num = globals.playerHand![index].$1;
+                      bool type = globals.playerHand![index].$2;
+                      try {
+                        return Draggable<(int, bool)>(
+                          data: (num, type),
+                          feedback: Opacity(
+                            opacity: 0.7,
+                            child: TileCard(num: num, type: type)
+                          ),
+                          childWhenDragging: Opacity(
+                            opacity: 0,
+                            child: TileCard(num: num, type: type),
+                          ),
+                          child: TileCard(num: num, type: type),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text(e.toString())));
+                        return ColoredBox(color: Colors.grey);
+                      }
+                    }),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 50,),
           FractionallySizedBox(
-            widthFactor: 0.9,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  spacing: 20,
-                  children: List.generate(3, (index) {
-                    try {
-                      return TileCard(
-                        num: globals.playerHand![index].$1,
-                        type: globals.playerHand![index].$2,
-                      );
-                    } catch (e) {
-                      return ColoredBox(color: Colors.grey);
-                    }
-                  }),
+            widthFactor: 0.8,
+            child: FilledButton(
+              onPressed: () => validMove ? _takeTurnController.takeTurn(gameId, playerTurn, moveIndex, table, cardPlayed) : null,
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF7AD475),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ],
+              ),
+              child: Text(
+                "Confirm move",
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ),
         ],
