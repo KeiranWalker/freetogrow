@@ -13,7 +13,9 @@ class CreateUserController extends ChangeNotifier {
   String? error;
   PostgrestList? response;
 
-  Future<String?> createUser({required String username}) async {
+  Future<(String, String, String, String)?> createUser({
+    required String username,
+  }) async {
     try {
       isLoading = true;
       error = null;
@@ -38,7 +40,9 @@ class CreateUserController extends ChangeNotifier {
         await Future.delayed(const Duration(seconds: 2));
       }
 
-      return userId;
+      final opName = await _gameStateRepo.getOpponentName(gameId, userId);
+
+      return (userId, username, opName ?? "Opponent", gameId);
     } catch (e) {
       error = e.toString();
       return null;

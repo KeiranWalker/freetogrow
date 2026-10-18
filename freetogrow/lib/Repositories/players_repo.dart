@@ -7,7 +7,7 @@ class PlayersRepo {
     return await _supabaseClient
         .from('players')
         .insert({'name': username})
-        .select('id');
+        .select('id, name');
   }
 
   Future<List<int>?> getTableData(String playerId) async {

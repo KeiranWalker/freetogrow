@@ -28,9 +28,7 @@ class GameStateRepo {
         .from('game_states')
         .select()
         .eq('id', gameId)
-        .maybeSingle();
-
-    if (data == null) return null;
+        .single();
 
     final List<int> table = List<int>.from(data['table'] as List);
 
@@ -66,5 +64,27 @@ class GameStateRepo {
         .single();
 
     return response['player_two'] != null;
+  }
+
+  Future<String?> getOpponentName(String gameId, String userId) async {
+    final game = await _supabaseClient
+        .from('game_states')
+        .select('player_one, player_two')
+        .eq('id', gameId)
+        .single();
+
+    final opponentId = game['player_one'] == userId
+        ? game['player_two']
+        : game['player_one'];
+
+    if (opponentId == null) return null;
+
+    final opponent = await _supabaseClient
+        .from('players')
+        .select('name')
+        .eq('id', opponentId)
+        .single();
+
+    return opponent['name'] as String;
   }
 }
