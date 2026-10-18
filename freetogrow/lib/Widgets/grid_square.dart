@@ -63,12 +63,17 @@ class _GridSquareState extends State<GridSquare>{
               return;
             } else {
               List<int> cardIndexes = getCardIndexes(widget.index, num);
+              bool isAdjacentToPlayer = false;
               for (var index in cardIndexes) {
-                if (index < 0 || index > 63 || widget.boardState[index] == 1 || widget.boardState[index] == 2 || (num%8 != index%8 && num~/8 != index~/8)) {
+                if (index < 0 || index > 63 || widget.boardState[index] == 1 || widget.boardState[index] == 2) {
                   return;
+                } else if (isAdjacentToPlayerSquare(index)) {
+                    isAdjacentToPlayer = true;
                 }
               }
-              widget.validMoveCallback(widget.index, details.data);
+              if (isAdjacentToPlayer) {
+                widget.validMoveCallback(widget.index, details.data);
+              }
             }
           } else {
             List<int> cardIndexes = getCardIndexes(widget.index, details.data.$1);
