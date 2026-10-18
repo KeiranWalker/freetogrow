@@ -234,6 +234,7 @@ class _GridPageState extends State<GridPage> {
                             bool type = globals.playerHand![index].$2;
                             try {
                               return Draggable<(int, bool)>(
+                                maxSimultaneousDrags : myPlayerNumber == playerTurn ? 1 : 0,
                                 data: (num, type),
                                 feedback: Opacity(
                                   opacity: 0.7,

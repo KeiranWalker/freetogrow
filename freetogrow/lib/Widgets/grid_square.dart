@@ -53,9 +53,9 @@ class _GridSquareState extends State<GridSquare>{
 
   bool willOverflow(int index, int shape) {
     int shapeWidth = shapeList[shape][0] + shapeList[shape][2] + 1;
-    if (shapeWidth + index%8 > 8) {
-      return true;
-    }
+    // if (shapeWidth + index%8 > 8) {
+    //   return true;
+    // }
     return false;
   }
 
@@ -72,7 +72,12 @@ class _GridSquareState extends State<GridSquare>{
               decoration : BoxDecoration(
                 color: getColour(widget.status), 
                 border: Border.all(width: 0.3)
-              )
+              ),
+              child: 
+                widget.index == 0 || widget.index == 63
+                ? Icon(Icons.cottage)
+                : SizedBox.shrink()
+                ,
             ),
           )
         );
