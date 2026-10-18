@@ -25,7 +25,7 @@ class TakeTurnController extends ChangeNotifier {
     for (final index in indexes) {
       if (cardPlayed.$2) {
         updatedTable[index] = playerValue;
-      } else if (updatedTable[index] == opponentValue) {
+      } else if (updatedTable[index] == opponentValue && index != 0 && index != 63) {
         updatedTable[index] = 0;
       }
     }

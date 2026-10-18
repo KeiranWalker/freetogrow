@@ -165,148 +165,151 @@ class _GridPageState extends State<GridPage> {
     final bool isMyTurn = myPlayerNumber != null && playerTurn == myPlayerNumber;
 
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 50),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      myPlayerNumber == 1 ? username : opponentName,
-                      style: TextTheme.of(context).headlineSmall,
-                    ),
-                    Text(
-                      myPlayerNumber == 1
-                          ? (isMyTurn ? "Your turn" : "Waiting...")
-                          : (playerTurn == 1 ? "Playing!" : "Waiting..."),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      myPlayerNumber == 2 ? username : opponentName,
-                      style: TextTheme.of(context).headlineSmall,
-                    ),
-                    Text(
-                      myPlayerNumber == 2
-                          ? (isMyTurn ? "Your turn" : "Waiting...")
-                          : (playerTurn == 2 ? "Playing!" : "Waiting..."),
-                    ),
-                  ],
-                ),
-              ],
+      body: SizedBox(
+        height: double.infinity,
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height/20),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        myPlayerNumber == 1 ? username : opponentName,
+                        style: TextTheme.of(context).headlineSmall,
+                      ),
+                      Text(
+                        myPlayerNumber == 1
+                            ? (isMyTurn ? "Your turn" : "Waiting...")
+                            : (playerTurn == 1 ? "Playing!" : "Waiting..."),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        myPlayerNumber == 2 ? username : opponentName,
+                        style: TextTheme.of(context).headlineSmall,
+                      ),
+                      Text(
+                        myPlayerNumber == 2
+                            ? (isMyTurn ? "Your turn" : "Waiting...")
+                            : (playerTurn == 2 ? "Playing!" : "Waiting..."),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 75),
-          Center(
-            child: FractionallySizedBox(
+            SizedBox(height: MediaQuery.of(context).size.height/50),
+            Center(
+              child: FractionallySizedBox(
+                widthFactor: 0.8,
+                child: ClipRRect(
+                  child: GridView.count(
+                    controller: ScrollController(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    crossAxisCount: 8,
+                    children: loading ? [CircularProgressIndicator()] : grid!,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height/30),
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: FractionallySizedBox(
+                widthFactor: 0.9,
+                child: Column(
+                  children: loading
+                      ? [ColoredBox(color: Colors.grey)]
+                      : [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            spacing: 20,
+                            children: List.generate(3, (index) {
+                              int num = globals.playerHand![index].$1;
+                              bool type = globals.playerHand![index].$2;
+                              try {
+                                return Draggable<(int, bool)>(
+                                  maxSimultaneousDrags : myPlayerNumber == playerTurn ? 1 : 0,
+                                  data: (num, type),
+                                  feedback: Opacity(
+                                    opacity: 0.7,
+                                    child: TileCard(num: num, type: type),
+                                  ),
+                                  childWhenDragging: Opacity(
+                                    opacity: 0,
+                                    child: TileCard(num: num, type: type),
+                                  ),
+                                  child: TileCard(num: num, type: type),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(e.toString())),
+                                );
+                                return ColoredBox(color: Colors.grey);
+                              }
+                            }),
+                          ),
+                        ],
+                ),
+              ),
+            ),
+            SizedBox(height: 50),
+            FractionallySizedBox(
               widthFactor: 0.8,
-              child: ClipRRect(
-                child: GridView.count(
-                  controller: ScrollController(),
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  crossAxisCount: 8,
-                  children: loading ? [CircularProgressIndicator()] : grid!,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 60),
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: FractionallySizedBox(
-              widthFactor: 0.9,
-              child: Column(
-                children: loading
-                    ? [ColoredBox(color: Colors.grey)]
-                    : [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          spacing: 20,
-                          children: List.generate(3, (index) {
-                            int num = globals.playerHand![index].$1;
-                            bool type = globals.playerHand![index].$2;
-                            try {
-                              return Draggable<(int, bool)>(
-                                maxSimultaneousDrags : myPlayerNumber == playerTurn ? 1 : 0,
-                                data: (num, type),
-                                feedback: Opacity(
-                                  opacity: 0.7,
-                                  child: TileCard(num: num, type: type),
-                                ),
-                                childWhenDragging: Opacity(
-                                  opacity: 0,
-                                  child: TileCard(num: num, type: type),
-                                ),
-                                child: TileCard(num: num, type: type),
-                              );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(e.toString())),
-                              );
-                              return ColoredBox(color: Colors.grey);
-                            }
-                          }),
-                        ),
-                      ],
-              ),
-            ),
-          ),
-          SizedBox(height: 50),
-          FractionallySizedBox(
-            widthFactor: 0.8,
-            child: FilledButton(
-              onPressed: validMove
-                  ? () async {
-                      final turnResult = await _takeTurnController.takeTurn(
-                        gameId,
-                        playerTurn!,
-                        moveIndex,
-                        table!,
-                        cardPlayed,
-                      );
-
-                      if (!mounted) return;
-
-                      final updatedTable = List<int>.from(table!);
-                      final indexes = getCardIndexes(moveIndex, cardPlayed.$1);
-
-                      final playerValue = myPlayerNumber;
-                      final opponentValue = myPlayerNumber == 1 ? 2 : 1;
-
-                      for (final index in indexes) {
-                        if (cardPlayed.$2) {
-                          updatedTable[index] = playerValue!;
-                        } else if (updatedTable[index] == opponentValue && index != 0 && index != 63) {
-                          updatedTable[index] = 0;
+              child: FilledButton(
+                onPressed: validMove
+                    ? () async {
+                        final turnResult = await _takeTurnController.takeTurn(
+                          gameId,
+                          playerTurn!,
+                          moveIndex,
+                          table!,
+                          cardPlayed,
+                        );
+        
+                        if (!mounted) return;
+        
+                        final updatedTable = List<int>.from(table!);
+                        final indexes = getCardIndexes(moveIndex, cardPlayed.$1);
+        
+                        final playerValue = myPlayerNumber;
+                        final opponentValue = myPlayerNumber == 1 ? 2 : 1;
+        
+                        for (final index in indexes) {
+                          if (cardPlayed.$2) {
+                            updatedTable[index] = playerValue!;
+                          } else if (updatedTable[index] == opponentValue && index != 0 && index != 63) {
+                            updatedTable[index] = 0;
+                          }
                         }
+        
+                        setState(() {
+                          validMove = false;
+                          playerTurn = turnResult.$2;
+                          table = turnResult.$1;
+                          grid = buildGrid(table!);
+                        });
                       }
-
-                      setState(() {
-                        validMove = false;
-                        playerTurn = turnResult.$2;
-                        table = turnResult.$1;
-                        grid = buildGrid(table!);
-                      });
-                    }
-                  : null,
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF7AD475),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                    : null,
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF7AD475),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                child: Text("Confirm move", style: TextStyle(fontSize: 20)),
               ),
-              child: Text("Confirm move", style: TextStyle(fontSize: 20)),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
