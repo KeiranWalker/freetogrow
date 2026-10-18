@@ -1,22 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:freetogrow/Controllers/load_game_controller.dart';
+import 'package:freetogrow/Repositories/game_state_repo.dart';
+
 import '../Widgets/grid_square.dart';
 import '../Widgets/tile_card.dart';
 import '../globals.dart' as globals;
 
 class GridPage extends StatefulWidget {
-  const GridPage ({super.key});
+  const GridPage({super.key});
 
   @override
   State<GridPage> createState() => _GridPageState();
 }
 
 class _GridPageState extends State<GridPage> {
+  late final LoadGameController _loadGameController;
+  late String userId;
+  late String gameId;
+
+  Map<int, String>? playerMappings;
+  int? myPlayerNumber;
+  bool _hasLoaded = false;
+  int? playerTurn;
+
+  @override
+  void initState() {
+    _loadGameController = LoadGameController(gameStateRepo: GameStateRepo());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _loadGameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> load() async {
+    final results = await _loadGameController.loadGame(gameId, userId);
+    final mappings = results!.$1;
+    playerTurn = results.$2;
+
+    if (!mounted) return;
+
+    setState(() {
+      playerMappings = mappings;
+
+      if (mappings != null) {
+        if (mappings[1] == userId) {
+          myPlayerNumber = 1;
+        } else if (mappings[2] == userId) {
+          myPlayerNumber = 2;
+        }
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_hasLoaded) return;
+    _hasLoaded = true;
+
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+
+    userId = args['userId']!;
+    gameId = args['gameId']!;
+
+    load();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+
+    userId = args['userId']!;
+    gameId = args['gameId']!;
+
+    final String username = args['username']!;
+    final String opponentName = args['opponentName']!;
+
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 50,),
+          SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
             child: Row(
@@ -24,20 +93,26 @@ class _GridPageState extends State<GridPage> {
               children: [
                 Column(
                   children: [
-                    Text("Player 1", style: TextTheme.of(context).headlineSmall,),
-                    Text("Waiting...")
-                  ]
-                ,),
+                    Text(
+                      myPlayerNumber == 1 ? username : opponentName,
+                      style: TextTheme.of(context).headlineSmall,
+                    ),
+                    Text(playerTurn == 1 ? "Your turn!" : "Waiting..."),
+                  ],
+                ),
                 Column(
                   children: [
-                    Text("Player 2", style: TextTheme.of(context).headlineSmall,),
-                    Text("Your turn!")
-                  ]
-                ,)
-              ]
-            ,),
+                    Text(
+                      myPlayerNumber == 2 ? username : opponentName,
+                      style: TextTheme.of(context).headlineSmall,
+                    ),
+                    Text(playerTurn == 2 ? "Your turn!" : "Waiting..."),
+                  ],
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 75,),
+          SizedBox(height: 75),
           Center(
             child: FractionallySizedBox(
               widthFactor: 0.8,
@@ -48,7 +123,10 @@ class _GridPageState extends State<GridPage> {
                   shrinkWrap: true,
                   crossAxisCount: 8,
                   children: List.generate(64, (index) {
-                    return GridSquare(status: index%4, size: MediaQuery.of(context).size.width);
+                    return GridSquare(
+                      status: index % 4,
+                      size: MediaQuery.of(context).size.width,
+                    );
                   }),
                 ),
               ),
@@ -64,20 +142,22 @@ class _GridPageState extends State<GridPage> {
                   spacing: 20,
                   children: List.generate(3, (index) {
                     try {
-                      return TileCard(num: globals.playerHand![index].$1, type: globals.playerHand![index].$2);
+                      return TileCard(
+                        num: globals.playerHand![index].$1,
+                        type: globals.playerHand![index].$2,
+                      );
                     } catch (e) {
                       ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text(e.toString())));
+                          .showSnackBar(SnackBar(content: Text(e.toString())));
                       return ColoredBox(color: Colors.grey);
                     }
-                   
                   }),
                 ),
               ],
             ),
-          )
+          ),
         ],
-      )
+      ),
     );
   }
 }

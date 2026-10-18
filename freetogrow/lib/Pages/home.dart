@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  Future<String?> _createUser() async {
+  Future<(String, String, String, String)?> _createUser() async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -51,10 +51,10 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    String? id;
+    (String, String, String, String)? results;
 
     try {
-      id = await _createUserController.createUser(
+      results = await _createUserController.createUser(
         username: usernameController.text,
       );
     } finally {
@@ -63,10 +63,17 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    if (!mounted) return id;
-
-    if (id != null) {
-      Navigator.pushNamed(context, '/grid');
+    if (results != null && mounted) {
+      Navigator.pushNamed(
+        context,
+        '/grid',
+        arguments: {
+          'userId': results.$1,
+          'username': results.$2,
+          'opponentName': results.$3,
+          'gameId': results.$4,
+        },
+      );
     }
 
     if (_createUserController.error != null) {
@@ -74,7 +81,7 @@ class _HomePageState extends State<HomePage> {
           .showSnackBar(SnackBar(content: Text(_createUserController.error!)));
     }
 
-    return id;
+    return results;
   }
 
   @override
