@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freetogrow/Controllers/load_game_controller.dart';
+import 'package:freetogrow/Controllers/take_turn_controller.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
 
 import '../Widgets/grid_square.dart';
@@ -15,6 +16,7 @@ class GridPage extends StatefulWidget {
 
 class _GridPageState extends State<GridPage> {
   late final LoadGameController _loadGameController;
+  late final TakeTurnController _takeTurnController;
   late String userId;
   late String gameId;
 
@@ -22,10 +24,12 @@ class _GridPageState extends State<GridPage> {
   int? myPlayerNumber;
   bool _hasLoaded = false;
   int? playerTurn;
+  List<int>? table;
 
   @override
   void initState() {
     _loadGameController = LoadGameController(gameStateRepo: GameStateRepo());
+    _takeTurnController = TakeTurnController(gameStateRepo: GameStateRepo());
     super.initState();
   }
 
@@ -39,6 +43,7 @@ class _GridPageState extends State<GridPage> {
     final results = await _loadGameController.loadGame(gameId, userId);
     final mappings = results!.$1;
     playerTurn = results.$2;
+    table = results.$3;
 
     if (!mounted) return;
 
