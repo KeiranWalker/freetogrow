@@ -23,8 +23,7 @@ class _GridPageState extends State<GridPage> {
   late int moveIndex;
   late (int, bool) cardPlayed;
   bool validMove = false;
-  
-  
+
   late List<GridSquare>? grid;
   bool loading = true;
   Map<int, String>? playerMappings;
@@ -131,8 +130,15 @@ class _GridPageState extends State<GridPage> {
 
   List<GridSquare> buildGrid(List<int> table) {
     return List.generate(64, (index) {
-              return GridSquare(status: table[index], size: MediaQuery.of(context).size.width , boardState: table, index: index, myPlayerNumber: myPlayerNumber!, validMoveCallback:  setValidMove);
-            });
+      return GridSquare(
+        status: table[index],
+        size: MediaQuery.of(context).size.width,
+        boardState: table,
+        index: index,
+        myPlayerNumber: myPlayerNumber!,
+        validMoveCallback: setValidMove,
+      );
+    });
   }
 
   @override
@@ -197,42 +203,64 @@ class _GridPageState extends State<GridPage> {
             child: FractionallySizedBox(
               widthFactor: 0.9,
               child: Column(
-                children: loading ? [ColoredBox(color: Colors.grey)] : [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    spacing: 20,
-                    children: List.generate(3, (index) {
-                      int num = globals.playerHand![index].$1;
-                      bool type = globals.playerHand![index].$2;
-                      try {
-                        return Draggable<(int, bool)>(
-                          data: (num, type),
-                          feedback: Opacity(
-                            opacity: 0.7,
-                            child: TileCard(num: num, type: type)
-                          ),
-                          childWhenDragging: Opacity(
-                            opacity: 0,
-                            child: TileCard(num: num, type: type),
-                          ),
-                          child: TileCard(num: num, type: type),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(e.toString())));
-                        return ColoredBox(color: Colors.grey);
-                      }
-                    }),
-                  ),
-                ],
+                children: loading
+                    ? [ColoredBox(color: Colors.grey)]
+                    : [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          spacing: 20,
+                          children: List.generate(3, (index) {
+                            int num = globals.playerHand![index].$1;
+                            bool type = globals.playerHand![index].$2;
+                            try {
+                              return Draggable<(int, bool)>(
+                                data: (num, type),
+                                feedback: Opacity(
+                                  opacity: 0.7,
+                                  child: TileCard(num: num, type: type),
+                                ),
+                                childWhenDragging: Opacity(
+                                  opacity: 0,
+                                  child: TileCard(num: num, type: type),
+                                ),
+                                child: TileCard(num: num, type: type),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString())),
+                              );
+                              return ColoredBox(color: Colors.grey);
+                            }
+                          }),
+                        ),
+                      ],
               ),
             ),
           ),
-          SizedBox(height: 50,),
+          SizedBox(height: 50),
           FractionallySizedBox(
             widthFactor: 0.8,
             child: FilledButton(
-              onPressed: () => validMove ? _takeTurnController.takeTurn(gameId, playerTurn, moveIndex, table, cardPlayed) : null,
+              onPressed: validMove
+                  ? () async {
+                      await _takeTurnController.takeTurn(
+                        gameId,
+                        playerTurn,
+                        moveIndex,
+                        table,
+                        cardPlayed,
+                      );
+
+                      if (!mounted) return;
+
+                      setState(() {
+                        validMove = false;
+                        playerTurn = playerTurn == 1 ? 2 : 1;
+                        table = newTable;
+                        grid = buildGrid(table!);
+                      });
+                    }
+                  : null,
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFF7AD475),
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -240,10 +268,7 @@ class _GridPageState extends State<GridPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Text(
-                "Confirm move",
-                style: TextStyle(fontSize: 20),
-              ),
+              child: Text("Confirm move", style: TextStyle(fontSize: 20)),
             ),
           ),
         ],
