@@ -13,7 +13,7 @@ class Turnhandler {
 
   Turnhandler(this.gameId);
 
-  Future<void> playTurn() async {
+  Future<GameState> playTurn(GameState currentState) async {
     // Get updated board
     int? state = currentState.state;
     if (state == 1){
@@ -37,10 +37,10 @@ class Turnhandler {
 
     // Send board and hand to GUI
     // TODO: Receive updated board from GUI
-    final List<int> updatedTable = updatedState.table as List<int>;
+    final List<int> updatedTable = [];
 
     // TODO: Receive updated hand from GUI
-    final List<(int, bool)> newHand = List.from(hand);
+    final List<(int, bool)> newHand = [];
 
 
 
