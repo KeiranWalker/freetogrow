@@ -1,17 +1,19 @@
 import 'dart:math';
+
 import 'package:freetogrow/Objects/game_state.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
 import 'package:freetogrow/Repositories/players_repo.dart';
 
 class Turnhandler {
-  GameStateRepo gameStateRepo = GameStateRepo();
-  PlayersRepo playersRepo = PlayersRepo();
-  String gameId;
-  String playerId = "";
+  final GameStateRepo gameStateRepo = GameStateRepo();
+  final PlayersRepo playersRepo = PlayersRepo();
 
-  Turnhandler (this.gameId);
+  final String gameId;
+  String playerId = '';
 
-  GameState playTurn(GameState currentState){
+  Turnhandler(this.gameId);
+
+  Future<void> playTurn() async {
     // Get updated board
     int? state = currentState.state;
     if (state == 1){
@@ -33,26 +35,23 @@ class Turnhandler {
       return currentState;
     }
 
-    // Send board to GUI
-      // updatedState.board e.g.
-    // Send player hand to gui
-    // Recieve updated board from gui
-    List<int> updatedTable = [];
-    // Recieve updated hand from gui
-    List<(int, bool)> newHand = [];
+    // Send board and hand to GUI
+    // TODO: Receive updated board from GUI
+    final List<int> updatedTable = updatedState.table as List<int>;
 
+    // TODO: Receive updated hand from GUI
+    final List<(int, bool)> newHand = List.from(hand);
 
 
 
     // Update flowers
 
-    // Send updated board to db
-    gameStateRepo.updateTableData(gameId, updatedTable);
+    // Save updated board
+    await gameStateRepo.updateTableData(gameId, updatedTable);
 
-    // Generate new card
-    while (newHand.length < 3){
-      (int, bool)card = drawNewCard();
-      newHand.add(card);
+    // Generate new cards until the hand contains 3 cards
+    while (newHand.length < 3) {
+      newHand.add(drawNewCard());
     }
     // Send updated hand to db
     playersRepo.updatePlayerHand(playerId, newHand);
@@ -60,10 +59,8 @@ class Turnhandler {
     return currentState;
   }
 
-  // update Gamestate (Table) from database - main
-  GameState? getUpdatedGameState() {
-    GameState? gameState = gameStateRepo.getGameData(gameId) as GameState?;
-    return gameState;
+  Future<GameState?> getUpdatedGameState() async {
+    return await gameStateRepo.getGameData(gameId);
   }
 
   // draw new card
@@ -308,10 +305,10 @@ class Turnhandler {
                 }
               }
             }
-      }
+      }}
       }
       // switch between card types, different logic per card
-    }
+    
     return false;
   }
 
@@ -320,5 +317,5 @@ class Turnhandler {
       return true;
     }
     return false;
-}
+  }
 }

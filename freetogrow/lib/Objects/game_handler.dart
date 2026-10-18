@@ -1,26 +1,37 @@
-import 'dart:ffi';
-
 import 'package:freetogrow/Objects/game_state.dart';
 import 'package:freetogrow/Objects/turn_handler.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
 
 class Gamehandler {
-  GameStateRepo gameStateRepo = GameStateRepo();
-  GameState gameState = GameState();
+    final GameStateRepo gameStateRepo = GameStateRepo();
+  late GameState gameState;
 
-  Gamehandler(String player1_id){
-    String gameId = gameStateRepo.createNewGame(player1_id) as String;
-    gameState = gameStateRepo.getGameData (gameId) as GameState;
+  Future<void> initialise(String gameId) async {
+    final data = await gameStateRepo.getGameData(gameId);
+
+    if (data == null) {
+      throw Exception('Game not found');
+    }
   }
 
-  void play_game(){
-    while (gameState.getStatus() != 3 && gameState.getStatus() != -1){
-      Turnhandler turn = Turnhandler(gameState.getGameId()); 
-      //gameturn.playturn();
-      }
-      print("Game over");
+  Future<void> playGame() async {
+    while (gameState.getStatus() != 3 && gameState.getStatus() != -1) {
+      final Turnhandler turn = Turnhandler(gameState.getGameId());
 
-      
-      
+      // await turn.playTurn();
+
+      // Refresh game state after each turn
+      final updatedGame = await gameStateRepo.getGameData(
+        gameState.getGameId(),
+      );
+
+      if (updatedGame == null) {
+        throw Exception('Game not found');
+      }
+
+      gameState = updatedGame;
+    }
+
+    print('Game over');
   }
 }
