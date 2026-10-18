@@ -253,10 +253,24 @@ class _GridPageState extends State<GridPage> {
 
                       if (!mounted) return;
 
+                      final updatedTable = List<int>.from(table!);
+                      final indexes = getCardIndexes(moveIndex, cardPlayed.$1);
+
+                      final playerValue = playerTurn == 1 ? 1 : 2;
+                      final opponentValue = playerTurn == 1 ? 2 : 1;
+
+                      for (final index in indexes) {
+                        if (cardPlayed.$2) {
+                          updatedTable[index] = playerValue;
+                        } else if (updatedTable[index] == opponentValue) {
+                          updatedTable[index] = 0;
+                        }
+                      }
+
                       setState(() {
                         validMove = false;
                         playerTurn = playerTurn == 1 ? 2 : 1;
-                        table = newTable;
+                        table = updatedTable;
                         grid = buildGrid(table!);
                       });
                     }

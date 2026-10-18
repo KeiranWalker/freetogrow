@@ -24,6 +24,22 @@ class GridSquare extends StatefulWidget {
 }
 
 class _GridSquareState extends State<GridSquare>{
+  var shapeList = [[0,0,0,0],
+                  [1,0,0,0],
+                  [0,1,0,0],
+                  [1,0,1,0],
+                  [0,1,0,1],
+                  [0,1,1,0],
+                  [1,1,0,0],
+                  [0,0,1,1],
+                  [1,0,0,1],
+                  [1,0,1,1],
+                  [1,1,0,1],
+                  [1,1,1,0],
+                  [0,1,1,1],
+                  [0,1,0,2],
+                  [1,0,2,0]];
+
   double opacity = 1;
 
   bool isAdjacentToPlayerSquare(int index) {
@@ -31,6 +47,14 @@ class _GridSquareState extends State<GridSquare>{
       if (neighbour >= 0 && neighbour <= 63 && widget.boardState[neighbour] == widget.myPlayerNumber) {
         return true;
       }
+    }
+    return false;
+  }
+
+  bool willOverflow(int index, int shape) {
+    int shapeWidth = shapeList[shape][0] + shapeList[shape][2] + 1;
+    if (shapeWidth + index%8 > 8) {
+      return true;
     }
     return false;
   }
@@ -59,13 +83,13 @@ class _GridSquareState extends State<GridSquare>{
         setState(() {
           opacity = 1;
           if (type) {
-            if (widget.status == 1 || widget.status == 2) {
+            if (widget.status == 1 || widget.status == 2 || willOverflow(widget.index, num)) {
               return;
             } else {
               List<int> cardIndexes = getCardIndexes(widget.index, num);
               bool isAdjacentToPlayer = false;
               for (var index in cardIndexes) {
-                if (index < 0 || index > 63 || widget.boardState[index] == 1 || widget.boardState[index] == 2) {
+                if (index < 0 || index > 63 || widget.boardState[index] == 1 || widget.boardState[index] == 2 || willOverflow(index, num)) {
                   return;
                 } else if (isAdjacentToPlayerSquare(index)) {
                     isAdjacentToPlayer = true;
@@ -77,9 +101,13 @@ class _GridSquareState extends State<GridSquare>{
             }
           } else {
             List<int> cardIndexes = getCardIndexes(widget.index, details.data.$1);
-            for (var index in cardIndexes) {
-              if (index < 0 || index > 63) {
-                return;
+            if (willOverflow(widget.index, num)) {
+              return;
+            } else {
+              for (var index in cardIndexes) {
+                if (index < 0 || index > 63) {
+                  return;
+                }
               }
             }
             widget.validMoveCallback(widget.index, details.data);
