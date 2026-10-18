@@ -18,7 +18,7 @@ class Gamehandler {
     while (gameState.getStatus() != 3 && gameState.getStatus() != -1) {
       final Turnhandler turn = Turnhandler(gameState.getGameId());
 
-      gameState = turn.playTurn(gameState) as GameState;
+      // gameState = turn.playTurn(gameState) as GameState;
     }
 
     // TODO: alert game over

@@ -87,4 +87,11 @@ class GameStateRepo {
 
     return opponent['name'] as String;
   }
+
+  Future<void> takeTurn(int newPlayerTurn, List<int> table) async {
+    _supabaseClient.from('game_states').update({
+      'state': newPlayerTurn,
+      'table': table,
+    });
+  }
 }

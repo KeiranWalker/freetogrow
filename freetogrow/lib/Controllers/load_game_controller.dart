@@ -12,7 +12,7 @@ class LoadGameController extends ChangeNotifier {
   GameState? gameState;
   int? playerNumber;
 
-  Future<(Map<int, String>, int)?> loadGame(
+  Future<(Map<int, String>, int, List<int>)?> loadGame(
     String gameId,
     String userId,
   ) async {
@@ -27,9 +27,13 @@ class LoadGameController extends ChangeNotifier {
         error = 'Game not found';
         return null;
       }
+
+      final table = gameState!.table;
+
       return (
         {1: gameState!.player1!, 2: gameState!.player2!},
         gameState!.state,
+        table,
       );
     } catch (e) {
       error = e.toString();
