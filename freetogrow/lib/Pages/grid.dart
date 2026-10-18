@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freetogrow/Controllers/load_game_controller.dart';
 import 'package:freetogrow/Controllers/take_turn_controller.dart';
+import 'package:freetogrow/Objects/turn_handler.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
 
 import '../Widgets/grid_square.dart';
@@ -45,6 +46,15 @@ class _GridPageState extends State<GridPage> {
     final mappings = results!.$1;
     playerTurn = results.$2;
     table = results.$3;
+
+    if (globals.playerHand == [] || globals.playerHand!.isEmpty) {
+      final handler = Turnhandler(gameId);
+      globals.playerHand = [
+        handler.drawNewCard(),
+        handler.drawNewCard(),
+        handler.drawNewCard(),
+      ];
+    }
 
     if (!mounted) return;
 
@@ -172,8 +182,6 @@ class _GridPageState extends State<GridPage> {
                         type: globals.playerHand![index].$2,
                       );
                     } catch (e) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(e.toString())));
                       return ColoredBox(color: Colors.grey);
                     }
                   }),

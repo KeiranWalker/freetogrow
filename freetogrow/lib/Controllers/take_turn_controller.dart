@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:freetogrow/Objects/turn_handler.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
 
+import '../globals.dart' as globals;
+
 class TakeTurnController extends ChangeNotifier {
   final GameStateRepo _gameStateRepo;
 
@@ -23,6 +25,10 @@ class TakeTurnController extends ChangeNotifier {
     }
 
     table = updatedTable;
+
+    globals.playerHand!.remove(cardPlayed);
+    globals.playerHand!.add(Turnhandler(gameId).drawNewCard());
+
     final newPlayerTurn = playerTurn % 2 + 1;
 
     await _gameStateRepo.takeTurn(gameId, newPlayerTurn, table);
