@@ -68,16 +68,19 @@ class _GridSquareState extends State<GridSquare>{
           height: widget.size,
           child: Opacity(
             opacity: opacity,
-            child: DecoratedBox(
-              decoration : BoxDecoration(
-                color: getColour(widget.status), 
-                border: Border.all(width: 0.3)
-              ),
-              child: 
-                widget.index == 0 || widget.index == 63
-                ? Icon(Icons.cottage)
-                : SizedBox.shrink()
-                ,
+            child: SizedBox(
+              width: widget.size,
+              height: widget.size,
+              child: Stack(
+                alignment: AlignmentGeometry.center,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: Image.asset(getImagePath(widget.status), fit: BoxFit.fill)),
+                    ],
+                  ),
+                ],
+              )
             ),
           )
         );
@@ -132,20 +135,16 @@ class _GridSquareState extends State<GridSquare>{
     );
   }
 
-  dynamic getColour(int number) {
+  dynamic getImagePath(int number) {
     switch (number) {
       case 0: //neutral
-        return Colors.grey;
+        return 'assets/neutral-tile.png';
       case 1: //claimed by player 1
-        return Colors.green;
+        return 'assets/daisy-tile.png';
       case 2: //claimed by player 2
-        return Colors.pink;
-      case 3: //flower
-        return Colors.blue;
+        return 'assets/hedge-tile.png';
       case 4: //selected
-        return Colors.orange;
-      default:
-        return  Colors.black;
+        return 'assets/selected-tile.png';
     }
   }
   

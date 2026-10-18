@@ -18,7 +18,7 @@ class TileCard extends StatelessWidget {
         borderRadius: BorderRadiusGeometry.circular(10),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 191, 191, 191),
+            color: const Color.fromARGB(255, 205, 205, 205),
           ),
           child: Column(
             children: [
