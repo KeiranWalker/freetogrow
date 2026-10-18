@@ -9,7 +9,13 @@ class TakeTurnController extends ChangeNotifier {
 
   TakeTurnController({required this._gameStateRepo});
 
-  Future<void> takeTurn(gameId, playerTurn, move, table, cardPlayed) async {
+  Future<(List<int>, int)> takeTurn(
+    String gameId,
+    int playerTurn,
+    int move,
+    List<int> table,
+    (int, bool) cardPlayed,
+  ) async {
     final updatedTable = List<int>.from(table);
     final indexes = getCardIndexes(move, cardPlayed.$1);
 
@@ -24,12 +30,15 @@ class TakeTurnController extends ChangeNotifier {
       }
     }
 
-    globals.playerHand!.remove(cardPlayed);
-    globals.playerHand!.add(Turnhandler(gameId).drawNewCard());
+    final newPlayerTurn = playerTurn == 1 ? 2 : 1;
 
-    final newPlayerTurn = playerTurn % 2 + 1;
+    if (globals.playerHand != null) {
+      globals.playerHand!.remove(cardPlayed);
+      globals.playerHand!.add(Turnhandler(gameId).drawNewCard());
+    }
 
     await _gameStateRepo.takeTurn(gameId, newPlayerTurn, updatedTable);
+    return (updatedTable, newPlayerTurn);
   }
 
   Future<void> waitForMyTurn(
@@ -45,7 +54,7 @@ class TakeTurnController extends ChangeNotifier {
 
       if (game.state != previousState) {
         previousState = game.state;
-        onStateChanged(game.state!);
+        onStateChanged(game.state);
       }
 
       if (game.state == 3) return;

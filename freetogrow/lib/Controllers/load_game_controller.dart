@@ -29,12 +29,12 @@ class LoadGameController extends ChangeNotifier {
       }
 
       final table = gameState!.table;
+      final playerOne = gameState!.player1.isNotEmpty
+          ? gameState!.player1
+          : userId;
+      final playerTwo = gameState!.player2.isNotEmpty ? gameState!.player2 : '';
 
-      return (
-        {1: gameState!.player1, 2: gameState!.player2},
-        gameState!.state,
-        table,
-      );
+      return ({1: playerOne, 2: playerTwo}, gameState!.state, table);
     } catch (e) {
       error = e.toString();
       return null;

@@ -49,7 +49,15 @@ class _GridPageState extends State<GridPage> {
 
   Future<void> load() async {
     final results = await _loadGameController.loadGame(gameId, userId);
-    final mappings = results!.$1;
+    if (results == null) {
+      if (!mounted) return;
+      setState(() {
+        loading = false;
+      });
+      return;
+    }
+
+    final mappings = results.$1;
     playerTurn = results.$2;
     table = results.$3;
 
@@ -67,12 +75,10 @@ class _GridPageState extends State<GridPage> {
     setState(() {
       playerMappings = mappings;
 
-      if (mappings != null) {
-        if (mappings[1] == userId) {
-          myPlayerNumber = 1;
-        } else if (mappings[2] == userId) {
-          myPlayerNumber = 2;
-        }
+      if (mappings[1] == userId) {
+        myPlayerNumber = 1;
+      } else if (mappings[2] == userId) {
+        myPlayerNumber = 2;
       }
     });
 
@@ -82,6 +88,8 @@ class _GridPageState extends State<GridPage> {
   }
 
   Future<void> waitForMyTurn() async {
+    if (myPlayerNumber == null) return;
+
     await _takeTurnController.waitForMyTurn(gameId, myPlayerNumber!, (
       state,
     ) async {
@@ -92,6 +100,7 @@ class _GridPageState extends State<GridPage> {
       setState(() {
         playerTurn = results.$2;
         table = results.$3;
+        grid = buildGrid(table!);
       });
     });
   }
@@ -129,13 +138,15 @@ class _GridPageState extends State<GridPage> {
   }
 
   List<GridSquare> buildGrid(List<int> table) {
+    final playerNumber = myPlayerNumber ?? 1;
+
     return List.generate(64, (index) {
       return GridSquare(
         status: table[index],
         size: MediaQuery.of(context).size.width,
         boardState: table,
         index: index,
-        myPlayerNumber: myPlayerNumber!,
+        myPlayerNumber: playerNumber,
         validMoveCallback: setValidMove,
       );
     });
@@ -151,6 +162,7 @@ class _GridPageState extends State<GridPage> {
 
     final String username = args['username']!;
     final String opponentName = args['opponentName']!;
+    final bool isMyTurn = myPlayerNumber != null && playerTurn == myPlayerNumber;
 
     return Scaffold(
       body: Column(
@@ -167,7 +179,11 @@ class _GridPageState extends State<GridPage> {
                       myPlayerNumber == 1 ? username : opponentName,
                       style: TextTheme.of(context).headlineSmall,
                     ),
-                    Text(playerTurn == 1 ? "Playing!" : "Waiting..."),
+                    Text(
+                      myPlayerNumber == 1
+                          ? (isMyTurn ? "Your turn" : "Waiting...")
+                          : (playerTurn == 1 ? "Playing!" : "Waiting..."),
+                    ),
                   ],
                 ),
                 Column(
@@ -176,7 +192,11 @@ class _GridPageState extends State<GridPage> {
                       myPlayerNumber == 2 ? username : opponentName,
                       style: TextTheme.of(context).headlineSmall,
                     ),
-                    Text(playerTurn == 2 ? "Playing!" : "Waiting..."),
+                    Text(
+                      myPlayerNumber == 2
+                          ? (isMyTurn ? "Your turn" : "Waiting...")
+                          : (playerTurn == 2 ? "Playing!" : "Waiting..."),
+                    ),
                   ],
                 ),
               ],
@@ -243,34 +263,20 @@ class _GridPageState extends State<GridPage> {
             child: FilledButton(
               onPressed: validMove
                   ? () async {
-                      await _takeTurnController.takeTurn(
+                      final turnResult = await _takeTurnController.takeTurn(
                         gameId,
-                        playerTurn,
+                        playerTurn!,
                         moveIndex,
-                        table,
+                        table!,
                         cardPlayed,
                       );
 
                       if (!mounted) return;
 
-                      final updatedTable = List<int>.from(table!);
-                      final indexes = getCardIndexes(moveIndex, cardPlayed.$1);
-
-                      final playerValue = myPlayerNumber;
-                      final opponentValue = myPlayerNumber == 1 ? 2 : 1;
-
-                      for (final index in indexes) {
-                        if (cardPlayed.$2) {
-                          updatedTable[index] = playerValue!;
-                        } else if (updatedTable[index] == opponentValue) {
-                          updatedTable[index] = 0;
-                        }
-                      }
-
                       setState(() {
                         validMove = false;
-                        playerTurn = playerTurn == 1 ? 2 : 1;
-                        table = updatedTable;
+                        playerTurn = turnResult.$2;
+                        table = turnResult.$1;
                         grid = buildGrid(table!);
                       });
                     }

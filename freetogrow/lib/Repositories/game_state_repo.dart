@@ -34,8 +34,8 @@ class GameStateRepo {
 
     return GameState(
       state: data['state'] as int,
-      player1: data['player_one'] as String,
-      player2: data['player_two'] as String,
+      player1: (data['player_one'] as String?) ?? '',
+      player2: (data['player_two'] as String?) ?? '',
       gameId: data['id'] as String,
       table: table,
     );
@@ -93,7 +93,7 @@ class GameStateRepo {
     int newPlayerTurn,
     List<int> table,
   ) async {
-    _supabaseClient
+    await _supabaseClient
         .from('game_states')
         .update({'state': newPlayerTurn, 'table': table})
         .eq('id', gameId);
