@@ -1,5 +1,4 @@
-// mess that some uniformed people may call code was Finlays but I just edited it as the structure change.
-// therefore I shouldn;t be blamed for this atrocity
+
 import 'package:freetogrow/Objects/game_state.dart';
 import 'dart:math';
 
@@ -40,7 +39,7 @@ class FlowerService {
     }
 
 
-    // we can't just index a rand num between 1 and 64 as it needs to be an open square hence this mess which I refuse to touch
+    // we can't just index a rand num between 1 and 64 as it needs to be an open square hence this 
     while (flowerCount < expectedCount) {
         var rng = Random();
         int random = rng.nextInt(openCount);
@@ -59,7 +58,7 @@ class FlowerService {
             }
           }
         }
-        flowerCount -= 1;
+        flowerCount += 1;
     }
     gameState.table = table;
     return gameState;
