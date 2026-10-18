@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:freetogrow/Objects/game_state.dart';
+import 'package:freetogrow/Objects/replenish_flowers.dart';
 import 'package:freetogrow/Repositories/game_state_repo.dart';
 import 'package:freetogrow/Repositories/players_repo.dart';
 
@@ -38,6 +39,7 @@ class Turnhandler {
     // Send board and hand to GUI
     // TODO: Receive updated board from GUI
     final List<int> updatedTable = [];
+    currentState.table = updatedTable;
 
     // TODO: Receive updated hand from GUI
     final List<(int, bool)> newHand = [];
@@ -45,6 +47,8 @@ class Turnhandler {
 
 
     // Update flowers
+    final FlowerService flowerService = FlowerService(currentState);
+    currentState = flowerService.populateWithFlowers();
 
     // Save updated board
     await gameStateRepo.updateTableData(gameId, updatedTable);
