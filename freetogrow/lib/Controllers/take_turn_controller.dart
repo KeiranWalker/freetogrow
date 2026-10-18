@@ -25,6 +25,28 @@ class TakeTurnController extends ChangeNotifier {
     table = updatedTable;
     final newPlayerTurn = playerTurn % 2 + 1;
 
-    _gameStateRepo.takeTurn(newPlayerTurn, table);
+    await _gameStateRepo.takeTurn(gameId, newPlayerTurn, table);
+  }
+
+  Future<void> waitForMyTurn(
+    String gameId,
+    int myPlayerNumber,
+    void Function(int state) onStateChanged,
+  ) async {
+    int? previousState;
+
+    while (true) {
+      final game = await _gameStateRepo.getGameData(gameId);
+      if (game == null) return;
+
+      if (game.state != previousState) {
+        previousState = game.state;
+        onStateChanged(game.state!);
+      }
+
+      if (game.state == 3) return;
+
+      await Future.delayed(const Duration(seconds: 2));
+    }
   }
 }
