@@ -4,8 +4,9 @@
 Level 3
 
 ## Models Used
-Chat-GPT (free model)
-CoPilot (free model)
+Chat-GPT (default free model)
+
+CoPilot (default free model)
 
 ## Description
 
