@@ -165,6 +165,7 @@ class _GridPageState extends State<GridPage> {
     final bool isMyTurn = myPlayerNumber != null && playerTurn == myPlayerNumber;
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 244, 255, 232),
       body: SizedBox(
         height: double.infinity,
         child: Column(
@@ -179,7 +180,10 @@ class _GridPageState extends State<GridPage> {
                     children: [
                       Text(
                         myPlayerNumber == 1 ? username : opponentName,
-                        style: TextTheme.of(context).headlineSmall,
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: const Color.fromARGB(255, 42, 115, 45),
+                        ),
                       ),
                       Text(
                         myPlayerNumber == 1
@@ -192,7 +196,10 @@ class _GridPageState extends State<GridPage> {
                     children: [
                       Text(
                         myPlayerNumber == 2 ? username : opponentName,
-                        style: TextTheme.of(context).headlineSmall,
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: const Color.fromARGB(255, 188, 43, 33),
+                        ),
                       ),
                       Text(
                         myPlayerNumber == 2
