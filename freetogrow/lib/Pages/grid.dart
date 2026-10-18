@@ -36,6 +36,7 @@ class _GridPageState extends State<GridPage> {
   @override
   void dispose() {
     _loadGameController.dispose();
+    _takeTurnController.dispose();
     super.dispose();
   }
 
@@ -57,6 +58,25 @@ class _GridPageState extends State<GridPage> {
           myPlayerNumber = 2;
         }
       }
+    });
+
+    if (myPlayerNumber != null && playerTurn != 3) {
+      waitForMyTurn();
+    }
+  }
+
+  Future<void> waitForMyTurn() async {
+    await _takeTurnController.waitForMyTurn(gameId, myPlayerNumber!, (
+      state,
+    ) async {
+      final results = await _loadGameController.loadGame(gameId, userId);
+
+      if (!mounted || results == null) return;
+
+      setState(() {
+        playerTurn = results.$2;
+        table = results.$3;
+      });
     });
   }
 
