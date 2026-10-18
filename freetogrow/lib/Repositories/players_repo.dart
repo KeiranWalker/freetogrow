@@ -27,10 +27,10 @@ class PlayersRepo {
     return hand;
   }
 
-  Future<void> updatePlayerHand(String playerId, List<int> hand) async {
+  Future<void> updatePlayerHand(String playerId, List<(int, bool)> hand) async {
     await _supabaseClient
         .from('players')
-        .update({'hand': hand})
+        .update({'hand': hand.map((e) => [e.$1, e.$2]).toList()})
         .eq('id', playerId);
   }
 
