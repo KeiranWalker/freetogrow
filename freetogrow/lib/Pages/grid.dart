@@ -256,12 +256,12 @@ class _GridPageState extends State<GridPage> {
                       final updatedTable = List<int>.from(table!);
                       final indexes = getCardIndexes(moveIndex, cardPlayed.$1);
 
-                      final playerValue = playerTurn == 1 ? 1 : 2;
-                      final opponentValue = playerTurn == 1 ? 2 : 1;
+                      final playerValue = myPlayerNumber;
+                      final opponentValue = myPlayerNumber == 1 ? 2 : 1;
 
                       for (final index in indexes) {
                         if (cardPlayed.$2) {
-                          updatedTable[index] = playerValue;
+                          updatedTable[index] = playerValue!;
                         } else if (updatedTable[index] == opponentValue) {
                           updatedTable[index] = 0;
                         }

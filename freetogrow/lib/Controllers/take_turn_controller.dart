@@ -24,14 +24,12 @@ class TakeTurnController extends ChangeNotifier {
       }
     }
 
-    table = updatedTable;
-
     globals.playerHand!.remove(cardPlayed);
     globals.playerHand!.add(Turnhandler(gameId).drawNewCard());
 
     final newPlayerTurn = playerTurn % 2 + 1;
 
-    await _gameStateRepo.takeTurn(gameId, newPlayerTurn, table);
+    await _gameStateRepo.takeTurn(gameId, newPlayerTurn, updatedTable);
   }
 
   Future<void> waitForMyTurn(
